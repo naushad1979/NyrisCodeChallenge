@@ -30,6 +30,7 @@ namespace Imagination
                 .AddJaegerExporter()
                 .AddSource(Program.Telemetry.Name));
 
+            services.AddSwaggerGen();
             services.AddControllers();
         }
 
@@ -46,6 +47,11 @@ namespace Imagination
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Image Processing Service");
+            });
         }
     }
 }
