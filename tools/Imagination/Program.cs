@@ -65,7 +65,9 @@ namespace Imagination
 
                     services.AddOptions<TestFileOptions>()
                         .Bind(hostContext.Configuration.GetSection("TestFiles"))
-                        .Validate(options => Directory.Exists(options.BaseDirectory));
+                    //.Validate(options => Directory.Exists(options.BaseDirectory));
+                    .Validate(options => Directory.Exists((Path.Combine(Directory.GetParent("..").Parent.FullName, "resources"))));
+                    
                 });
 
             return builder.RunConsoleAsync();

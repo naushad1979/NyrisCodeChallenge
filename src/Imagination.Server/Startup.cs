@@ -1,3 +1,4 @@
+using Imagination.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -33,6 +34,7 @@ namespace Imagination
                 .AddSource(Program.Telemetry.Name));
 
             services.AddSwaggerGen();
+            services.AddTransient<IImaginationService, ImaginationService>();
             services.AddControllers();
         }
 

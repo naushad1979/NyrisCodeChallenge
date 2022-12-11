@@ -46,8 +46,7 @@ namespace Imagination
 
         private async Task<FileStream> StreamToDiskAsync(Stream responseStream, CancellationToken cancellationToken)
         {
-            //TODO
-            var fileName = @"C:\MyWorkSpace\Nyris\Imagination\NyrisCodeChallenge\Imagination\resources\output\MyImage.jpg";//Path.GetTempFileName();
+            var fileName = Path.GetTempFileName();
             Activity.Current?.AddTag("output.file", fileName);
 
             _log.LogInformation("Reading response stream into {TemporaryFile}", fileName);

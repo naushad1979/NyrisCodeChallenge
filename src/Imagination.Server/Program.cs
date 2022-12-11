@@ -20,10 +20,6 @@ namespace Imagination
                 .ConfigureWebHostDefaults(webBuilder => 
                 { 
                     webBuilder.UseStartup<Startup>();
-                    webBuilder.UseKestrel(options =>
-                    {
-                        options.Limits.MaxResponseBufferSize = 52428800; //50MB
-                    });
                 });
     }
 }

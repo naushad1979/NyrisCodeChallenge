@@ -1,58 +1,41 @@
-﻿using System;
-using System.Buffers;
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Imagination.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats;
-using SixLabors.ImageSharp.Processing;
+using System.Threading.Tasks;
 
 namespace Imagination.Controllers
 {
     [ApiController]
     public class ImaginationController : ControllerBase
-    {        
+    {
         private readonly ILogger<ImaginationController> _logger;
+        private readonly IImaginationService _imaginationService;
 
-        public ImaginationController(ILogger<ImaginationController> logger)
+        public ImaginationController(ILogger<ImaginationController> logger
+            , IImaginationService imaginationService)
         {
             _logger = logger;
-        }         
+            _imaginationService = imaginationService;
+        }
 
 
         [HttpPost]
         [Route("convert")]
         public async Task<IActionResult> ConvertAsync()
         {
-            MemoryStream pngStream = new MemoryStream();
-            await Request.Body.CopyToAsync(pngStream);
-            
-            pngStream.Position = 0;
-            MemoryStream jpgStream = new MemoryStream();
+            using var activity = Program.Telemetry.StartActivity("Service png to jpg conversion start");
+            using var scope = _logger.BeginScope("Processing PNG stream started");
 
-            try
-            {
-                var image = await Image.LoadWithFormatAsync(pngStream, CancellationToken.None);
-                await image.Image.SaveAsJpegAsync(jpgStream,CancellationToken.None);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            var response = await _imaginationService.Convert(Request.Body);
 
-            return File(jpgStream.ToArray(), "image/jpeg");             
+            if (response != null && response.Status)
+            {
+                return File(response.TargatedStream, "image/jpeg");
+            }
+            else
+            {
+                return BadRequest(response);
+            }                                   
         }
     }
 }

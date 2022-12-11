@@ -1,12 +1,14 @@
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Trace;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Imagination
 {
@@ -22,8 +24,7 @@ namespace Imagination
             _client = client;
             _lifetime = lifetime;
             _log = log;
-            //TODO
-            //_options = options.Value;
+            _options = options.Value;
         }
 
         /// <inheritdoc />
@@ -40,9 +41,7 @@ namespace Imagination
 
         private async Task ProcessAllFilesAsync(CancellationToken stoppingToken)
         {
-            foreach (var file in Directory.EnumerateFiles("C:\\MyWorkSpace\\Nyris\\Imagination\\NyrisCodeChallenge\\Imagination\\resources"))
-            //TODO
-            //foreach (var file in Directory.EnumerateFiles(_options.BaseDirectory))
+            foreach (var file in Directory.EnumerateFiles(_options.BaseDirectory))
             {
                 await ProcessFileAsync(file, stoppingToken);
             }
