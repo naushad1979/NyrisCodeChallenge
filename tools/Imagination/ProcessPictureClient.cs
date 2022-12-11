@@ -25,7 +25,7 @@ namespace Imagination
             using var activity = Program.Telemetry.StartActivity(nameof(ProcessPictureAsync));
             try
             {
-                activity?.AddEvent(new ActivityEvent("Sending request"));
+                activity?.AddEvent(new ActivityEvent("Sending request"));                
                 using var response = await _client.PostAsync((Uri?)null, new StreamContent(picture), cancellationToken);
 
                 activity?.AddEvent(new ActivityEvent("Response received"));
@@ -46,7 +46,8 @@ namespace Imagination
 
         private async Task<FileStream> StreamToDiskAsync(Stream responseStream, CancellationToken cancellationToken)
         {
-            var fileName = Path.GetTempFileName();
+            //TODO
+            var fileName = @"C:\MyWorkSpace\Nyris\Imagination\NyrisCodeChallenge\Imagination\resources\output\MyImage.jpg";//Path.GetTempFileName();
             Activity.Current?.AddTag("output.file", fileName);
 
             _log.LogInformation("Reading response stream into {TemporaryFile}", fileName);

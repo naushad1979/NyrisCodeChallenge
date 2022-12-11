@@ -22,7 +22,8 @@ namespace Imagination
             _client = client;
             _lifetime = lifetime;
             _log = log;
-            _options = options.Value;
+            //TODO
+            //_options = options.Value;
         }
 
         /// <inheritdoc />
@@ -39,7 +40,9 @@ namespace Imagination
 
         private async Task ProcessAllFilesAsync(CancellationToken stoppingToken)
         {
-            foreach (var file in Directory.EnumerateFiles(_options.BaseDirectory))
+            foreach (var file in Directory.EnumerateFiles("C:\\MyWorkSpace\\Nyris\\Imagination\\NyrisCodeChallenge\\Imagination\\resources"))
+            //TODO
+            //foreach (var file in Directory.EnumerateFiles(_options.BaseDirectory))
             {
                 await ProcessFileAsync(file, stoppingToken);
             }
