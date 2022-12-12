@@ -34,6 +34,10 @@ namespace Imagination.Services
                     var image = await Image.LoadWithFormatAsync(sourceStream, CancellationToken.None);
                     await image.Image.SaveAsJpegAsync(outStream, CancellationToken.None);
 
+                    //Free up the memeory
+                    await sourceStream.DisposeAsync();
+                    image.Image.Dispose();
+
                     _logger.LogInformation("Image conversion successfull");
                     activity?.SetStatus(Status.Ok);
                     activity.Stop();
