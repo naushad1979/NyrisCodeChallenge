@@ -63,3 +63,14 @@ For testing, you can point it to a different directory using the `--TestFiles:Ba
 
 The responses from your service are not automatically evaluated by the tool. You _may choose_ to
 add extra logic to it, that is - however - not required. If you do, please add a note.
+
+## Service Implementation details
+1. The new service endpoint is implemented that has convert post action.
+2. The convert action pass the stream as Request.Body to the business service named as "ImaginationService". This service is reposible for convert the source image to the desination image.
+3. ImageSharp third party tool is used for Jpeg conversion process. This tool compitable with .net core code.
+4. I keep the Imagination (Client)  logic intact for output image with extension as .tnp. However, converted image can be seend by chaging the format from .tmp to .jpeg manually. 
+5. The new service end point details also added in docker.compose file with endpoint is running on 5000 port. The service was tested by running docker-compose up --build command using terminal. All the services are hosted successfully on the Docker Desktop.
+6. The Unit and Intergation test cases were not written as they were not asked. However, if requires they can be written.
+
+## Change in existing Imagination client
+1. The Source directory path changes in TestFileOptions.cs and Program.cs 
