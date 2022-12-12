@@ -5,6 +5,6 @@ namespace Imagination.Services
 {
     public interface IImaginationService
     {
-        Task<CoversionResponse> Convert(Stream sourceStream);
+        Task<CoversionResponse> ConvertAsync(Stream sourceStream);
     }
 }

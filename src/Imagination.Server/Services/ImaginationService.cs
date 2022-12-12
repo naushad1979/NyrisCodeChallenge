@@ -5,6 +5,9 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using SixLabors.ImageSharp;
+using OpenTelemetry.Trace;
+using System.Diagnostics;
+
 namespace Imagination.Services
 {
     public class ImaginationService: IImaginationService
@@ -15,8 +18,10 @@ namespace Imagination.Services
             _logger= logger;
         }
 
-        public async Task<CoversionResponse> Convert(Stream sourceStream)
+        public async Task<CoversionResponse> ConvertAsync(Stream sourceStream)
         {
+            using var activity = Program.Telemetry.StartActivity("Coversion Started");
+            using var scope = _logger.BeginScope("Incoming Image processing started");
             try
             {
                 using (MemoryStream sourceStgStream = new MemoryStream())
@@ -28,7 +33,10 @@ namespace Imagination.Services
                         var image = await Image.LoadWithFormatAsync(sourceStgStream, CancellationToken.None);
                         await image.Image.SaveAsJpegAsync(convertedStream, CancellationToken.None);
 
-                        _logger.LogInformation("PNG to JPEG file conversion successfull");
+                        _logger.LogInformation("Image conversion successfull");
+                        activity?.SetStatus(Status.Ok);
+                        activity.Stop();
+
                         return new CoversionResponse
                         {
                             Status = true,
@@ -38,9 +46,13 @@ namespace Imagination.Services
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                _logger.LogError("Conversion Failed", ex.Message);
+                _logger.LogError("Conversion Failed", e.Message);
+                activity?.SetStatus(Status.Error);
+                activity?.AddEvent(new ActivityEvent(e.Message));
+                activity.Stop();
+
                 return new CoversionResponse
                 {
                     Status = false,

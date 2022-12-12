@@ -1,6 +1,7 @@
 ﻿using Imagination.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using OpenTelemetry.Trace;
 using System.Threading.Tasks;
 
 namespace Imagination.Controllers
@@ -23,10 +24,7 @@ namespace Imagination.Controllers
         [Route("convert")]
         public async Task<IActionResult> ConvertAsync()
         {
-            using var activity = Program.Telemetry.StartActivity("Service png to jpg conversion start");
-            using var scope = _logger.BeginScope("Processing PNG stream started");
-
-            var response = await _imaginationService.Convert(Request.Body);
+            var response = await _imaginationService.ConvertAsync(Request.Body);
 
             if (response != null && response.Status)
             {
@@ -34,8 +32,9 @@ namespace Imagination.Controllers
             }
             else
             {
+                // returns 400 status code for with error details
                 return BadRequest(response);
-            }                                   
+            }
         }
     }
 }
