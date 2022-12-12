@@ -10,40 +10,40 @@ using System.Diagnostics;
 
 namespace Imagination.Services
 {
-    public class ImaginationService: IImaginationService
+    public class ImaginationService : IImaginationService
     {
         private readonly ILogger<ImaginationService> _logger;
         public ImaginationService(ILogger<ImaginationService> logger)
         {
-            _logger= logger;
+            _logger = logger;
         }
-
+        /// <summary>
+        /// The Reuable Image processing logic for the API
+        /// </summary>
+        /// <param name="sourceStream">Incoming stream to be converted</param>
+        /// <returns>The Response object including outstream for the converted Image</returns>
         public async Task<CoversionResponse> ConvertAsync(Stream sourceStream)
         {
             using var activity = Program.Telemetry.StartActivity("Coversion Started");
             using var scope = _logger.BeginScope("Incoming Image processing started");
             try
             {
-                using (MemoryStream sourceStgStream = new MemoryStream())
+                using (MemoryStream outStream = new MemoryStream())
                 {
-                    await sourceStream.CopyToAsync(sourceStgStream);
-                    using (MemoryStream convertedStream = new MemoryStream())
+                    sourceStream.Position = 0;
+                    var image = await Image.LoadWithFormatAsync(sourceStream, CancellationToken.None);
+                    await image.Image.SaveAsJpegAsync(outStream, CancellationToken.None);
+
+                    _logger.LogInformation("Image conversion successfull");
+                    activity?.SetStatus(Status.Ok);
+                    activity.Stop();
+
+                    return new CoversionResponse
                     {
-                        sourceStgStream.Position = 0;
-                        var image = await Image.LoadWithFormatAsync(sourceStgStream, CancellationToken.None);
-                        await image.Image.SaveAsJpegAsync(convertedStream, CancellationToken.None);
-
-                        _logger.LogInformation("Image conversion successfull");
-                        activity?.SetStatus(Status.Ok);
-                        activity.Stop();
-
-                        return new CoversionResponse
-                        {
-                            Status = true,
-                            Message = "Conversion successfull",
-                            TargatedStream = convertedStream.ToArray()
-                        };                        
-                    }
+                        Status = true,
+                        Message = "Conversion successfull",
+                        TargatedStream = outStream.ToArray()
+                    };
                 }
             }
             catch (Exception e)

@@ -19,7 +19,10 @@ namespace Imagination.Controllers
             _imaginationService = imaginationService;
         }
 
-
+        /// <summary>
+        /// Input stream will accept as a Request body
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         [Route("convert")]
         public async Task<IActionResult> ConvertAsync()

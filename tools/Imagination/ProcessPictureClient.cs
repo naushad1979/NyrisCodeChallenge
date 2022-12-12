@@ -46,7 +46,7 @@ namespace Imagination
 
         private async Task<FileStream> StreamToDiskAsync(Stream responseStream, CancellationToken cancellationToken)
         {
-            var fileName = Path.GetTempFileName();
+            var fileName = Path.GetTempFileName();           
             Activity.Current?.AddTag("output.file", fileName);
 
             _log.LogInformation("Reading response stream into {TemporaryFile}", fileName);

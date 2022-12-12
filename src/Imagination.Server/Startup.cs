@@ -50,9 +50,12 @@ namespace Imagination
 
             app.UseAuthorization();
 
+            //Allow buffering with Max Request Size as 
             app.Use(next => context => {
                 context.Request.EnableBuffering();
-                context.Features.Get<IHttpMaxRequestBodySizeFeature>().MaxRequestBodySize = null;  
+
+                //Currently set to unlimited but can be changed according to need
+                context.Features.Get<IHttpMaxRequestBodySizeFeature>().MaxRequestBodySize = null; 
                 return next(context);
             });
             
